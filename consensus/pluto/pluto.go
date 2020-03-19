@@ -779,7 +779,7 @@ func (c *Pluto) Finalize(chain consensus.ChainReader, header *types.Header, stat
 	}
 
 	if chain.Config().ChainId.Int64() == params.TestnetChainId && header.Number.Uint64() == posconfig.TestnetAdditionalBlock   {
-		log.Info("block:", posconfig.TestnetAdditionalBlock)
+		log.Info("Finalize", "blockNumber", posconfig.TestnetAdditionalBlock)
 		state.AddBalance(posconfig.PosOwnerAddrTestnet, posconfig.TestnetAdditionalValue)
 		epochLeader.CleanInactiveValidator(state, epochID)
 		epochLeader.ListValidator(state)

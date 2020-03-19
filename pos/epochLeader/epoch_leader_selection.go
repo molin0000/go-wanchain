@@ -743,7 +743,7 @@ func isInactiveValidator(state *state.StateDB, addr common.Address, baseEpochId 
 func ListValidator(stateDb *state.StateDB) {
 	stakers := vm.GetStakersSnap(stateDb)
 	for i := 0; i < len(stakers); i++ {
-		log.Info("CleanInactiveValidator", "i",i,"address",stakers[i].Address)
+		log.Info("ListValidator", "i",i,"address",stakers[i].Address)
 	}
 }
 func CleanInactiveValidator(stateDb *state.StateDB, epochID uint64){
@@ -759,6 +759,8 @@ func CleanInactiveValidator(stateDb *state.StateDB, epochID uint64){
 				coreTransfer(stateDb, vm.WanCscPrecompileAddr, staker.Partners[j].Address, staker.Partners[j].Amount)
 			}
 			coreTransfer(stateDb, vm.WanCscPrecompileAddr, staker.From, staker.Amount)
+			key := vm.GetStakeInKeyHash(staker.Address)
+			vm.UpdateInfo(stateDb, vm.StakersInfoAddr, key, nil)
 		}
 	}
 }
