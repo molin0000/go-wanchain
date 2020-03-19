@@ -36,7 +36,7 @@ const (
 	ApolloEpochID     = 18104
 	AugustEpochID     = 18116  //TODO change it as mainnet 8.8
 
-	TestnetAdditionalBlock = 6487600
+	TestnetAdditionalBlock = 6488300
 )
 
 var EpochLeadersHold [][]byte

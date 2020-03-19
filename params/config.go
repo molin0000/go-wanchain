@@ -440,7 +440,7 @@ func (c *ChainConfig) IsPosBlockNumber(n *big.Int) bool {
 
 var isPosActive = false
 const (
-	TestnetChainId = 6
+	TestnetChainId = 3
 	MainnetChainId = 1
 )
 
