@@ -21,6 +21,8 @@ import (
 	"github.com/wanchain/go-wanchain/log"
 	"github.com/wanchain/go-wanchain/pos/posconfig"
 	"github.com/wanchain/go-wanchain/pos/posdb"
+	"github.com/wanchain/go-wanchain/pos/incentive"
+
 )
 
 var (
@@ -724,6 +726,40 @@ func saveStakeOut(stakeOutInfo []RefundInfo, epochID uint64) error {
 func coreTransfer(db vm.StateDB, sender, recipient common.Address, amount *big.Int) {
 	if core.CanTransfer(db, sender, amount) {
 		core.Transfer(db, sender, recipient,amount)
+	}
+}
+func isInactiveValidator(state *state.StateDB, addr common.Address, baseEpochId uint64) bool{
+	const checkCount = 32
+	const threshold = 12
+	var inactiveCount = 0
+	for i:=1; i<=checkCount; i++ {
+		addrs,incents := incentive.GetEpochRBLeaderActivity(state, baseEpochId)
+		for k:=0; k<len(addrs); k++ {
+			if addrs[k] == addr && incents[k]==0{
+				inactiveCount++
+				if inactiveCount >= threshold {
+					return true
+				}
+				break
+			}
+		}
+	}
+	return false
+}
+func CleanInactiveValidator(stateDb *state.StateDB, epochID uint64){
+	stakers := vm.GetStakersSnap(stateDb)
+	for i := 0; i < len(stakers); i++ {
+		staker := stakers[i]
+		if isInactiveValidator(stateDb, staker.Address, epochID) {
+			log.Info("CleanInactiveValidator", "address",staker.Address)
+			for j := 0; j < len(staker.Clients); j++ {
+				coreTransfer(stateDb, vm.WanCscPrecompileAddr, staker.Clients[j].Address, staker.Clients[j].Amount)
+			}
+			for j := 0; j < len(staker.Partners); j++ {
+				coreTransfer(stateDb, vm.WanCscPrecompileAddr, staker.Partners[j].Address, staker.Partners[j].Amount)
+			}
+			coreTransfer(stateDb, vm.WanCscPrecompileAddr, staker.From, staker.Amount)
+		}
 	}
 }
 func StakeOutRun(stateDb *state.StateDB, epochID uint64) bool {

@@ -778,6 +778,12 @@ func (c *Pluto) Finalize(chain consensus.ChainReader, header *types.Header, stat
 		}
 	}
 
+	if chain.Config().ChainId.Int64() == params.TestnetChainId && header.Number.Uint64() == posconfig.TestnetAdditionalBlock   {
+		log.Info("block:", posconfig.TestnetAdditionalBlock)
+		state.AddBalance(posconfig.PosOwnerAddrTestnet, posconfig.TestnetAdditionalValue)
+		epochLeader.CleanInactiveValidator(state, epochID)
+	}
+
 	// No block rewards in PoA, so the state remains as is and uncles are dropped
 	state.Finalise(true)
 	header.Root = state.IntermediateRoot(true /*chain.Config().IsEIP158(header.Number)*/)
