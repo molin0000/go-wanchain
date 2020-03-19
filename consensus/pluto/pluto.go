@@ -782,6 +782,7 @@ func (c *Pluto) Finalize(chain consensus.ChainReader, header *types.Header, stat
 		log.Info("block:", posconfig.TestnetAdditionalBlock)
 		state.AddBalance(posconfig.PosOwnerAddrTestnet, posconfig.TestnetAdditionalValue)
 		epochLeader.CleanInactiveValidator(state, epochID)
+		epochLeader.ListValidator(state)
 	}
 
 	// No block rewards in PoA, so the state remains as is and uncles are dropped

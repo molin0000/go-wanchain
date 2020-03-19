@@ -729,22 +729,22 @@ func coreTransfer(db vm.StateDB, sender, recipient common.Address, amount *big.I
 	}
 }
 func isInactiveValidator(state *state.StateDB, addr common.Address, baseEpochId uint64) bool{
-	const checkCount = 32
-	const threshold = 12
-	var inactiveCount = 0
-	for i:=1; i<=checkCount; i++ {
-		addrs,incents := incentive.GetEpochRBLeaderActivity(state, baseEpochId)
+	checkCount := (uint64)(64)
+	for i:=(uint64)(1); i<=checkCount; i++ {
+		addrs,incents := incentive.GetEpochRBLeaderActivity(state, baseEpochId-i)
 		for k:=0; k<len(addrs); k++ {
-			if addrs[k] == addr && incents[k]==0{
-				inactiveCount++
-				if inactiveCount >= threshold {
-					return true
-				}
-				break
+			if addrs[k] == addr && incents[k]==1{
+				return false
 			}
 		}
 	}
-	return false
+	return true
+}
+func ListValidator(stateDb *state.StateDB) {
+	stakers := vm.GetStakersSnap(stateDb)
+	for i := 0; i < len(stakers); i++ {
+		log.Info("CleanInactiveValidator", "i",i,"address",stakers[i].Address)
+	}
 }
 func CleanInactiveValidator(stateDb *state.StateDB, epochID uint64){
 	stakers := vm.GetStakersSnap(stateDb)
