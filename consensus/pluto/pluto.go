@@ -872,6 +872,9 @@ func (c *Pluto) Seal(chain consensus.ChainReader, block *types.Block, stop <-cha
 	header.Difficulty.SetUint64(epochSlotId)
 	header.Coinbase = signer
 
+	// TODO: just for test
+	return block.WithSeal(header), nil
+
 	s := slotleader.GetSlotLeaderSelection()
 	buf, err := s.PackSlotProof(epochId, slotId, key.PrivateKey)
 	if err != nil {
