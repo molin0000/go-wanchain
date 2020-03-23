@@ -848,9 +848,7 @@ func (c *Pluto) Seal(chain consensus.ChainReader, block *types.Block, stop <-cha
 	}
 	leader := hex.EncodeToString(crypto.FromECDSAPub(leaderPub))
 	if leader != localPublicKey {
-		//TODO: this is just a test.
-		log.Info("Ignore leader check")
-		//return nil, nil
+		return nil, nil
 	}
 
 	log.Info("Generate a new block", "number", number, "epochID", epochId, "slotId", slotId, "curTime", time.Now(),
@@ -871,9 +869,6 @@ func (c *Pluto) Seal(chain consensus.ChainReader, block *types.Block, stop <-cha
 
 	header.Difficulty.SetUint64(epochSlotId)
 	header.Coinbase = signer
-
-	// TODO: just for test
-	return block.WithSeal(header), nil
 
 	s := slotleader.GetSlotLeaderSelection()
 	buf, err := s.PackSlotProof(epochId, slotId, key.PrivateKey)

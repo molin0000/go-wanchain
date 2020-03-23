@@ -169,10 +169,6 @@ func (self *Miner) backendTimerLoop(s Backend) {
 			}
 			targetEpochLeaderID = 0
 		}
-		// TODO: this is just a test.
-		slotTime := (epochID*posconfig.SlotCount + slotID) * posconfig.SlotTime
-		self.worker.chainSlotTimer <- slotTime
-
 		if sls.IsLocalPkInEpochLeaders(prePks) {
 			leaderPub, err := sls.GetSlotLeader(targetEpochLeaderID, slotID)
 			if err == nil {
